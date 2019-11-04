@@ -1,0 +1,11 @@
+
+# ignore all logs
+**/logs
+
+# ignore node_modules
+**/node_modules
+
+
+**/package-lock.json
+
+**/*_compressed.txt
