@@ -1,7 +1,7 @@
 const CSV = require("./enteties/csv.js");
 var Logger = require('./utils/logger.js');
 var logger = new Logger().getInstance();
-console.log("main.js file");
+logger.debug("entering main.js file");
 
 const electron = require("electron");
 const app = electron.app;
@@ -11,8 +11,10 @@ const url = require("url");
 
 let win;
 
+/// creating browser window
 function createWindow() {
   win = new BrowserWindow();
+  logger.info("new window is created");
   win.loadURL(url.format({
     pathname: path.join(__dirname, "index.html"),
     protocol: "file",
@@ -27,7 +29,7 @@ function createWindow() {
 
 app.on('ready', createWindow);
 
-// only for mac
+/// only for mac
 app.on("window-all-closed", () => {
   if (process.platform != 'darwin') {
     app.quit()
@@ -39,12 +41,13 @@ app.on("activate", () => {
     createWindow()
   }
 });
+/// ********** ///
 
-var test_compress_file = new CSV("./tests/example_files/csv/basic.csv", "sz");
+var test_compress_file = new CSV("./test/example_files/csv/basic.csv");
 test_compress_file.compress();
 
-var test_decompress_file = new CSV("./tests/example_files/csv/basic_compressed.txt", "kk");
-test_decompress_file.decompress();
+// var test_decompress_file = new CSV("./tests/example_files/csv/basic_compressed.txt");
+// test_decompress_file.decompress();
 
 
 

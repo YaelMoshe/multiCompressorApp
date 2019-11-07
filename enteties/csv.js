@@ -13,19 +13,26 @@ class CSV extends File {
   compress() {
     logger.info("compressing file");
 
+    /// Read from desired file
+    try {
+      var data_from_file = fs.readFileSync(this.path, 'utf8').split(",");
+    }
+    catch (err) {
+      logger.debug("error while trying to read from file -> " + err);
+      throw err;
+    }
+
+    var data_len = data_from_file.length;
+
     /// Create compressed_file path
     var compressed_file = (this.path).replace(".csv", "_compressed.txt");
     logger.debug("compressed_file path is: " + compressed_file);
-    
-    /// Read from desired file 
-    var data_from_file = fs.readFileSync(this.path, 'utf8').split("\n");
-    var data_len = data_from_file.length;
 
     /// Go over the file - row by row
     for(var i = 0; i < data_len; ++i) {
       var row = data_from_file[i].split(",");
       var r_length = row.length;
-      
+
       /// Create new file and add number of columns to it
       if (i === 0) {
         logger.info("creating compressed file - " + compressed_file);
@@ -37,7 +44,7 @@ class CSV extends File {
           logger.debug("number of columns is: " + r_length);
       }
       logger.debug("row number " + i + " is: " + data_from_file[i]);
-      
+
       /// Go over the row - word by word
       for(var j = 0; j < r_length; ++j) {
         var word = row[j];
@@ -117,7 +124,3 @@ function swap(dict){
   return ret;
 }
 module.exports = CSV
-
-// doc - doxygen style
-// svn - send link to repo
-// tests

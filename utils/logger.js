@@ -1,6 +1,6 @@
 var fs = require("fs");
 
-var debug_flag = true;
+var debug_flag = false;
 
 class Logger {
   // create the log file
@@ -9,10 +9,10 @@ class Logger {
 
     fs.open(this.file_name, 'w', function (err, file) {
       if (err) throw err;
-      console.log('new log file is opened');
     });
   }
 
+  /// creating message in logging format
   create_msg(msg, type) {
     const timestamp = new Date().toISOString();
     return timestamp + " | " + type + " | " + msg + "\n";
@@ -41,12 +41,12 @@ class Logger {
           console.error("error - ", err, ", while writing message - ", msg, ", to log file ");
         }
       });
-      console.log(msg)
     }
   }
 
 }
 
+/// logger is singleton
 class Singleton {
 
   constructor() {
