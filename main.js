@@ -13,7 +13,12 @@ let win;
 
 /// creating browser window
 function createWindow() {
-  win = new BrowserWindow();
+  win = new BrowserWindow({
+    webPreferences: {
+        nodeIntegration: true
+    }
+  })
+
   logger.info("new window is created");
   win.loadURL(url.format({
     pathname: path.join(__dirname, "index.html"),
@@ -41,13 +46,18 @@ app.on("activate", () => {
     createWindow()
   }
 });
+
 /// ********** ///
 
-var test_compress_file = new CSV("./test/example_files/csv/basic.csv");
-test_compress_file.compress();
+function run_compress() {
+  var user_path = document.getElementById("path").value;
+  var compress_file = new CSV(user_path);
+  compress_file.compress();
+}
 
-// var test_decompress_file = new CSV("./tests/example_files/csv/basic_compressed.txt");
-// test_decompress_file.decompress();
-
-
+function run_decompress() {
+  var user_path = document.getElementById("depath").value;
+  var decompress_file = new CSV(user_path);
+  decompress_file.decompress();
+}
 

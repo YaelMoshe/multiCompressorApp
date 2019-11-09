@@ -11,25 +11,17 @@ var logger = new Logger().getInstance();
 class CSV extends File {
 
   compress() {
-    logger.info("compressing file");
+    logger.debug("compressing file");
 
     /// Read from desired file
-    try {
-      var data_from_file = fs.readFileSync(this.path, 'utf8').split(",");
-    }
-    catch (err) {
-      logger.debug("error while trying to read from file -> " + err);
-      throw err;
-    }
-
-    var data_len = data_from_file.length;
+    var data_from_file = this.read_file_sync("\n");
 
     /// Create compressed_file path
     var compressed_file = (this.path).replace(".csv", "_compressed.txt");
-    logger.debug("compressed_file path is: " + compressed_file);
+    var N_rows = data_from_file.length;
 
     /// Go over the file - row by row
-    for(var i = 0; i < data_len; ++i) {
+    for(var i = 0; i < N_rows; ++i) {
       var row = data_from_file[i].split(",");
       var r_length = row.length;
 
@@ -47,80 +39,64 @@ class CSV extends File {
 
       /// Go over the row - word by word
       for(var j = 0; j < r_length; ++j) {
-        var word = row[j];
-        logger.debug("word number " + j + " is: " + word);
+        var word = row[j].trim();
 
         /// Check if word is in legend, if not - add it
-        if (!(word in this.legend)) {
-          this.legend[word] = this.legend_count;
-          ++this.legend_count;
+        if (!(word in this.legend.struct)) {
+          this.legend.struct[word] = this.legend.count;
+          ++this.legend.count;
         }
         /// Add the word's code to the compressed_file
-        fs.appendFile(compressed_file, this.legend[word] + ",", function (err) {
+        fs.appendFile(compressed_file, this.legend.struct[word] + ",", function (err) {
           if (err) throw err; });
       }
     }
     /// Add the legend to the compressed_file
-    fs.appendFile(compressed_file, "@" + JSON.stringify(this.legend), function (err) {
+    fs.appendFile(compressed_file, "@" + JSON.stringify(this.legend.struct), function (err) {
       if (err) throw err; });
+    
+    alert("compress process is completed");
   }
 
   decompress() {
-    // create decompressed_file path
-    // var decompressed_file = (this.path).replace("_compressed.txt", "_new.csv");
-    // logger.debug("decompressed_file path is: " + decompressed_file);
-    
-    // var data_from_file = fs.readFileSync(this.path, 'utf8');
+    /// Read from desired file
+    var data_from_file = this.read_file_sync("@");
 
-    // console.log(this.path)
-    // console.log("jjj" + data_from_file)
+    // remove last ,
+    var data = data_from_file[0].substring(0, data_from_file.length - 1);
     // if data_from_file length is 1, something is wrong
+    var data_arr = data.split(",");
+    var stringy_dict = data_from_file[1];
 
-    // var data = data_from_file[0].split(",");
-    // console.log(data)
-    // var legend = data_from_file[1];
-    // console.log(legend)
-    // swap(legend);
+    logger.debug("data_arr is: " + data_arr + "\n dict is: " + stringy_dict)
+
+    // swap key with value
+    this.legend.key_value_swap(stringy_dict);
+    
+    // create decompressed_file path
+    var decompressed_file = (this.path).replace("_compressed.txt", "_new.csv");
+    logger.debug("decompressed_file path is: " + decompressed_file);
 
     // go over the coded file
-    // for(var i = 0; i < data.length; ++i) {
-    //   // var row = data_from_file[i].split(",");
-    //   // var r_length = row.length;
+    for(var i = 0; i < data_arr.length; ++i) {
+      // get number of columns
+      if (i === 0) {
+        var N_col = data_arr[i];
+        logger.debug("number of columns is: " + N_col);
+        continue;
+      }
+      /// Add the word to the csv file
+      fs.appendFile(decompressed_file, this.legend.struct[data_arr[i]] + ",", function (err) {
+        if (err) throw err; });
       
-    //   // get the number of columns
-    //   if (i === 0) {
-    //     var col = data[i];
-    //     logger.debug("number of columns is: " + col);
-    //     continue;
-    //   }
-      // logger.debug("row is: " + data_from_file[i]);
-      
-      // go over the row - word by word
-      // for(var j = 0; j < r_length; ++j) {
-      //   var word = row[j];
-      //   logger.debug("word is: " + word);
-
-      //   if (!(word in this.legend)) {
-      //     this.legend[word] = this.legend_count;
-      //     ++this.legend_count;
-      //   }
-      //   // add to the compressed_file the new word
-      //   fs.appendFile(decompressed_file, this.legend[word] + ",", function (err) {
-      //     if (err) throw err; });
-      // }
-    // }
-    // // add to the compressed_file the legend
-    // fs.appendFile(compressed_file, "@" + JSON.stringify(this.legend) + ",", function (err) {
-    //   if (err) throw err; }); 
+      // break line if number of columns has passed
+      if ((i) % N_col == 0) {
+        fs.appendFile(decompressed_file, "\n", function (err) {
+          if (err) throw err; });
+      }
+    }
+    alert("decompress process is completed");
   }
 }
 
-function swap(dict){
-  var ret = {};
-  console.log(JSON.parse(dict));
-  for(var key in dict){
-    ret[dict[key]] = key;
-  }
-  return ret;
-}
 module.exports = CSV

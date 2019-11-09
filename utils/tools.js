@@ -3,26 +3,18 @@
 class Legend {
 
   constructor(){
-    this.legend = {};
-    this.legend_count = 0;
-  }
-
-  swap(){
-    var ret = {};
-    for(var key in json){
-      ret[json[key]] = key;
-    }
-    return ret;
-  }
-  legend_to_string() {
-    
+    this.struct = {};
+    this.count = 0;
   }
   
+  key_value_swap(dict){
+    var new_dict = JSON.parse(dict);
+    var that = this;
   
-  string_to_legend() {
-  
-    
+    Object.keys(new_dict).forEach(function(key) {
+      that.struct[new_dict[key]] = key;
+    });  
   }
-
-  
 }
+
+module.exports = Legend
