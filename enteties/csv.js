@@ -63,7 +63,7 @@ class CSV extends File {
     var data_from_file = this.read_file_sync("@");
 
     // remove last ,
-    var data = data_from_file[0].substring(0, data_from_file.length - 1);
+    var data = data_from_file[0].substring(0, data_from_file[0].length - 1);
     // if data_from_file length is 1, something is wrong
     var data_arr = data.split(",");
     var stringy_dict = data_from_file[1];

@@ -8,6 +8,7 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow
 const path = require("path");
 const url = require("url");
+const fs = require('fs');
 
 let win;
 
@@ -50,14 +51,30 @@ app.on("activate", () => {
 /// ********** ///
 
 function run_compress() {
-  var user_path = document.getElementById("path").value;
+  var user_path = document.getElementById("file_path").files[0].path;
+  var before_size = get_file_size(user_path);
+  
   var compress_file = new CSV(user_path);
   compress_file.compress();
+
+  var after_size = get_file_size(user_path);
+  var per = calc_percentage(before_size, after_size);
+
+  alert("Your file was compressed by " + per + "%");
 }
 
 function run_decompress() {
-  var user_path = document.getElementById("depath").value;
+  var user_path = document.getElementById("file_path").files[0].path;
   var decompress_file = new CSV(user_path);
   decompress_file.decompress();
 }
 
+function calc_percentage(before_size, after_size) {
+  var percent = 100 * (after_size / before_size);
+  return (100 - percent);
+}
+
+function get_file_size(_path) {
+  var stats = fs.statSync(_path);
+  return stats["size"];
+}
